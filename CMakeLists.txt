@@ -173,6 +173,11 @@ endif ()
 ##############################################################################
 # Set global build options
 
+set (CMAKE_C_STANDARD 99)
+set (CXX_STANDARD_REQUIRED ON)
+set (CMAKE_CXX_STANDARD 17)
+set (CXX_STANDARD_REQUIRED ON)
+
 include (CheckCXXCompilerFlag)
 include (CheckIncludeFileCXX)
 
@@ -537,6 +542,7 @@ add_subdirectory (dispatch)
 add_subdirectory (helpers)
 add_subdirectory (wrappers)
 add_subdirectory (retrace)
+add_subdirectory (frametrim)
 
 
 ##############################################################################

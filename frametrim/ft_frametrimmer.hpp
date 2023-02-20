@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * Copyright 2011 Intel Corporation
+ * Copyright 2020 Collabora Ltd
  * All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person
@@ -27,29 +27,35 @@
 
 #pragma once
 
+#include "trace_parser.hpp"
 
-struct Command {
-    const char *name;
-    const char *synopsis;
+#include <vector>
+#include <unordered_set>
 
-    typedef void (*Usage) (void);
-    Usage usage;
+namespace frametrim {
 
-    typedef int (*Function) (int argc, char *argv[]);
-    Function function;
+enum Frametype {
+    ft_none = 0,
+    ft_key_frame = 1,
+    ft_retain_frame = 2
 };
 
-extern const Command diff_command;
-extern const Command diff_state_command;
-extern const Command diff_images_command;
-extern const Command dump_command;
-extern const Command dump_images_command;
-extern const Command leaks_command;
-extern const Command pickle_command;
-extern const Command repack_command;
-extern const Command retrace_command;
-extern const Command sed_command;
-extern const Command trace_command;
-extern const Command trim_command;
-extern const Command gltrim_command;
-extern const Command merge_command;
+class FrameTrimmer
+{
+public:
+    FrameTrimmer(bool keep_all_states);
+    ~FrameTrimmer();
+
+    void start_last_frame(uint32_t callno);
+    void call(const trace::Call& call, Frametype target_frame_type);
+
+    std::unordered_set<unsigned> finalize(int last_frame_start);
+
+    std::vector<unsigned> getSortedCallIds();
+    std::unordered_set<unsigned> getUniqueCallIds();
+private:
+    struct FrameTrimmeImpl *impl;
+
+};
+
+}

@@ -27,6 +27,7 @@ add_executable (apitrace
     cli_leaks.cpp
     cli_dump.cpp
     cli_dump_images.cpp
+    cli_gltrim.cpp
     cli_pager.cpp
     cli_pickle.cpp
     cli_repack.cpp
@@ -34,6 +35,7 @@ add_executable (apitrace
     cli_sed.cpp
     cli_trace.cpp
     cli_trim.cpp
+    cli_merge.cpp
     cli_resources.cpp
 )
 

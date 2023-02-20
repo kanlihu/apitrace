@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * Copyright 2011 Intel Corporation
+ * Copyright 2020 Collabora Ltd
  * All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person
@@ -27,29 +27,49 @@
 
 #pragma once
 
+#include "ft_dependecyobject.hpp"
+#include <stack>
 
-struct Command {
-    const char *name;
-    const char *synopsis;
+namespace frametrim {
 
-    typedef void (*Usage) (void);
-    Usage usage;
+class MatrixState : public UsedObject
+{
+public:
+    using Pointer = std::shared_ptr<MatrixState>;
 
-    typedef int (*Function) (int argc, char *argv[]);
-    Function function;
+    MatrixState(Pointer parent);
+
+    void selectMatrixType(const trace::Call& call);
+    void setMatrix(const trace::Call& call);
+
+private:
+    Pointer m_parent;
+    PTraceCall m_type_select_call;
 };
 
-extern const Command diff_command;
-extern const Command diff_state_command;
-extern const Command diff_images_command;
-extern const Command dump_command;
-extern const Command dump_images_command;
-extern const Command leaks_command;
-extern const Command pickle_command;
-extern const Command repack_command;
-extern const Command retrace_command;
-extern const Command sed_command;
-extern const Command trace_command;
-extern const Command trim_command;
-extern const Command gltrim_command;
-extern const Command merge_command;
+using PMatrixState = std::shared_ptr<MatrixState>;
+
+class AllMatrisStates {
+public:
+
+    AllMatrisStates();
+
+    void loadIdentity(const trace::Call& call);
+    void loadMatrix(const trace::Call& call);
+    void matrixMode(const trace::Call& call);
+    void popMatrix(const trace::Call& call);
+    void pushMatrix(const trace::Call& call);
+    void matrixOp(const trace::Call& call);
+    void emitStateTo(CallSet& list) const;
+
+private:
+    std::stack<PMatrixState> m_mv_matrix;
+    std::stack<PMatrixState> m_proj_matrix;
+    std::stack<PMatrixState> m_texture_matrix;
+    std::stack<PMatrixState> m_color_matrix;
+
+    PMatrixState m_current_matrix;
+    std::stack<PMatrixState> *m_current_matrix_stack;
+};
+
+}
